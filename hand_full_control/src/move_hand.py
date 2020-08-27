@@ -16,6 +16,7 @@ from std_msgs.msg import Float64MultiArray, Float32MultiArray
 from std_srvs.srv import Empty, EmptyResponse
 from sensor_msgs.msg import JointState
 from hand_full_control.srv import TargetAngles
+import tf
 
 
 class RodNode():
@@ -24,6 +25,8 @@ class RodNode():
     velocities = None
     names = None
     publishers = dict()
+    fingers = np.zeros((5,3))
+    joint_max_bound = np.deg2rad([30., 60., 60., 45.])
     
     def __init__(self):
         rospy.init_node('HandNode', anonymous=True)
@@ -34,6 +37,8 @@ class RodNode():
         rospy.Service('/MoveGripper', TargetAngles, self.MoveGripper)
         rospy.Service('/OpenGripper', Empty, self.OpenGripper)
         rospy.Service('/CloseGripper', Empty, self.CloseGripper)
+
+        self.finger_listener = tf.TransformListener()
 
         rospy.Subscriber('/soft_hand/joint_states', JointState, self.JointStatesCallback)
         rospy.loginfo('Waiting for list of controller names...')
@@ -48,36 +53,59 @@ class RodNode():
         self.Names = self.names
         print(self.Names)
 
-        for name in self.Names:
+        for name in self.Names.flatten():
             self.publishers[name] = rospy.Publisher('/soft_hand/' + name[5:] + '_position_controller/command', Float64, queue_size=10)
 
-        self.num_joints = len(self.names)
-        self.desired_angles = np.zeros((self.num_joints,))
+        self.num_joints = len(self.names.flatten())
+        self.num_fingers = self.names.shape[0]
+        self.desired_angles = np.zeros((self.num_joints,)).reshape(-1,4)
 
         msg = Float32MultiArray()
 
         rate = rospy.Rate(100)
         rospy.loginfo('Starting...')
         while not rospy.is_shutdown():
+            self.fingers_listener()
 
-            for i, name in enumerate(self.Names):
-                self.publishers[name].publish(self.desired_angles[i])
-
-            # print("Names: ", self.Names)
-            # print("Angles: ", np.rad2deg(self.angles))
-            # print("Effort: ", self.effort)
+            for finger in range(self.num_fingers):
+                for i, name in enumerate(self.Names[finger]):
+                    self.publishers[name].publish(self.desired_angles[finger, i])
 
             rate.sleep()
 
+    def fingers_listener(self):
+        tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_distal_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
+        
+        for i, link in enumerate(tip_links):
+            try:
+                (trans,rot) = self.finger_listener.lookupTransform('/soft_hand_softhand_base', '/' + link, rospy.Time(0))
+                self.fingers[i] = np.array(trans)
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                pass
+
+        # print(self.fingers)
+
+    def get_finger_index(self, finger_name):
+        s = finger_name[10]
+        return self.finger_order.index(s)
+        
     def JointStatesCallback(self, msg):
-        self.names = msg.name#[:4]
-        self.angles = np.array(msg.position)#[:4]
+        self.names = np.array(msg.name)#[:4]
+        self.angles = np.array(msg.position)#[:4]c
         self.velocities = np.array(msg.velocity)#[:4]
         self.effort = np.array(msg.effort)#[:4]
 
-        self.angles = np.array([(v if np.abs(v) > 1e-2 else 0.) for v in self.angles ])
-        # self.velocities = np.array([(v if np.abs(v) > 1e-2 else 0.) for v in self.velocities ])
+        self.names = np.append(self.names, 'dummy').reshape(-1,4)
+        self.angles = np.append(self.angles, 0)
+        self.effort = np.append(self.effort, 0).reshape(-1,4)
 
+        self.angles = np.array([(v if np.abs(v) > 1e-2 else 0.) for v in self.angles ]).reshape(-1,4)
+
+        f = [4, 0, 2, 3, 1]
+        self.names = self.names[np.array(f),:]
+        self.angles = self.angles[np.array(f),:]
+        self.effort = self.effort[np.array(f),:]
+        
     def MoveGripper(self, msg):
         
         self.desired_angles = msg.angles
@@ -92,15 +120,30 @@ class RodNode():
 
     def CloseGripper(self, msg):
         
-        while np.any(self.effort < 10):
-            for i, name in enumerate(self.Names):
-                if name.find('abd') < 0:
-                    self.desired_angles[i] += 0.05
+        l = [False] * self.num_fingers
+        while not np.all(l):
+            for finger in range(self.num_fingers):
+                if l[finger]:
+                    continue
 
-            for i, name in enumerate(self.Names):
-                self.publishers[name].publish(self.desired_angles[i])
-            
-            rospy.sleep(0.1)
+                if np.any(np.abs(self.effort[finger]) > 10):
+                    l[finger] = True
+                    continue
+
+                for i, name in enumerate(self.Names[finger]):
+                    if name.find('abd') >= 0:
+                        continue
+                    
+                    self.desired_angles[finger, i] += 0.01 if self.desired_angles[finger, i] < self.joint_max_bound[i] else 0
+                
+                if np.all(self.desired_angles[finger,1:] > self.joint_max_bound[1:]):
+                    l[finger] = True
+
+            for finger in range(self.num_fingers):
+                for i, name in enumerate(self.Names[finger]):
+                    self.publishers[name].publish(self.desired_angles[finger, i])
+                
+            rospy.sleep(0.01)
 
         return EmptyResponse()
         
