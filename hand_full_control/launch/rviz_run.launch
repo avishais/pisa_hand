@@ -1,0 +1,12 @@
+<launch>
+	<arg name="gui" default="true" />
+	<arg name="rvizconfig" default="$(find rod_elastic)/rviz/urdf.rviz" />
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find hand_full_control)/robot/soft_hand_full_actuation.urdf.xacro use_mimic_tag:=false"/>
+	<param name="use_gui" value="$(arg gui)"/>
+
+	<node if="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+	<node unless="$(arg gui)" name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <node name="my_rviz" pkg="rviz" type="rviz" respawn="false" args="-d $(find hand_full_control)/launch/my_rviz.rviz" output="screen"/>
+</launch>

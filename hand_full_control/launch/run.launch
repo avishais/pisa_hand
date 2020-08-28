@@ -1,7 +1,7 @@
 <launch>
     <!-- LAUNCH INTERFACE -->
     <arg name="gui" default="true"/>
-    <arg name="use_rviz" default="true"/>
+    <arg name="use_rviz" default="false"/>
     <arg name="use_joint_state_publisher" default="true"/>
     <arg name="use_effort_control" default="false"/>
 
@@ -20,10 +20,11 @@
     <!-- <rosparam command="load" file="$(find hand_full_control)/config/gazebo_position_control.yaml" /> -->
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model soft_hand -x 0 -y 0 -z 0.0 -R 0 -P 0 -Y 0" respawn="false" output="screen"/>
 
+    <!-- Publish joint angles -->
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 
-    <param name="publish_frequency" value="100"/>
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"  />
+    <!-- Publish finger tip positions -->
+    <node name="finger_state_publisher" pkg="hand_full_control" type="finger_state_publisher.py" output="screen" /> 
 
     <group if="$(arg use_effort_control)">
         <!-- load controller configurations -->
@@ -40,6 +41,10 @@
 
     <group if="$(arg use_rviz)">
         <node name="my_rviz" pkg="rviz" type="rviz" respawn="false" args="-d $(find hand_full_control)/launch/my_rviz.rviz" output="screen"/>
+        <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
     </group>
+
+    <!-- Node to control the hand -->
+    <node name="move_hand" pkg="hand_full_control" type="move_hand.py" output="screen" /> 
 
 </launch>

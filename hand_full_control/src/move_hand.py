@@ -16,8 +16,6 @@ from std_msgs.msg import Float64MultiArray, Float32MultiArray
 from std_srvs.srv import Empty, EmptyResponse
 from sensor_msgs.msg import JointState
 from hand_full_control.srv import TargetAngles
-import tf
-
 
 class RodNode():
 
@@ -27,18 +25,14 @@ class RodNode():
     publishers = dict()
     fingers = np.zeros((5,3))
     joint_max_bound = np.deg2rad([30., 60., 60., 45.])
+    tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_distal_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
     
     def __init__(self):
         rospy.init_node('HandNode', anonymous=True)
 
-        self.Kp = 10#np.array([k1, k1 ,k2]) # Springs coefficients
-        self.Kd = 1#np.array([100, 100, .1]) # Damping
-
         rospy.Service('/MoveGripper', TargetAngles, self.MoveGripper)
         rospy.Service('/OpenGripper', Empty, self.OpenGripper)
         rospy.Service('/CloseGripper', Empty, self.CloseGripper)
-
-        self.finger_listener = tf.TransformListener()
 
         rospy.Subscriber('/soft_hand/joint_states', JointState, self.JointStatesCallback)
         rospy.loginfo('Waiting for list of controller names...')
@@ -51,7 +45,6 @@ class RodNode():
 
         rospy.loginfo('Found list of controller names.')
         self.Names = self.names
-        print(self.Names)
 
         for name in self.Names.flatten():
             self.publishers[name] = rospy.Publisher('/soft_hand/' + name[5:] + '_position_controller/command', Float64, queue_size=10)
@@ -60,30 +53,18 @@ class RodNode():
         self.num_fingers = self.names.shape[0]
         self.desired_angles = np.zeros((self.num_joints,)).reshape(-1,4)
 
-        msg = Float32MultiArray()
+        msg = Float64MultiArray()
 
         rate = rospy.Rate(100)
-        rospy.loginfo('Starting...')
+        rospy.loginfo('Running...')
         while not rospy.is_shutdown():
-            self.fingers_listener()
 
             for finger in range(self.num_fingers):
                 for i, name in enumerate(self.Names[finger]):
                     self.publishers[name].publish(self.desired_angles[finger, i])
 
+
             rate.sleep()
-
-    def fingers_listener(self):
-        tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_distal_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
-        
-        for i, link in enumerate(tip_links):
-            try:
-                (trans,rot) = self.finger_listener.lookupTransform('/soft_hand_softhand_base', '/' + link, rospy.Time(0))
-                self.fingers[i] = np.array(trans)
-            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-                pass
-
-        # print(self.fingers)
 
     def get_finger_index(self, finger_name):
         s = finger_name[10]
@@ -114,7 +95,7 @@ class RodNode():
 
     def OpenGripper(self, msg):
         
-        self.desired_angles = np.zeros((self.num_joints,))
+        self.desired_angles = np.zeros((self.num_joints,)).reshape(-1,4)
 
         return EmptyResponse()
 
