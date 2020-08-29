@@ -3,7 +3,7 @@
     <arg name="gui" default="true"/>
     <arg name="use_rviz" default="false"/>
     <arg name="use_joint_state_publisher" default="true"/>
-    <arg name="use_effort_control" default="false"/>
+    <arg name="use_effort_control" default="true"/>
 
     <!-- load Gazebo simulation environment -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -17,8 +17,10 @@
     </include>
 
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find hand_full_control)/robot/soft_hand_full_actuation.urdf.xacro use_mimic_tag:=false"/>
-    <!-- <rosparam command="load" file="$(find hand_full_control)/config/gazebo_position_control.yaml" /> -->
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model soft_hand -x 0 -y 0 -z 0.0 -R 0 -P 0 -Y 0" respawn="false" output="screen"/>
+
+    <node name="spawn_object" pkg="gazebo_ros" type="spawn_model" args="-file $(find object_spawn)/urdf/object.urdf -urdf -x 0 -z 0.0 -model ycb_object" />
+
 
     <!-- Publish joint angles -->
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
@@ -30,13 +32,19 @@
         <!-- load controller configurations -->
         <rosparam file="$(find hand_full_control)/config/soft_hand_full_effort_control.yaml" command="load"/>
 
-        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/soft_hand" args="joint_state_controller hand_thumb_abd_joint_effort_controller hand_thumb_inner_joint_effort_controller hand_thumb_outer_joint_effort_controller hand_index_abd_joint_effort_controller hand_index_inner_joint_effort_controller hand_index_middle_joint_effort_controller hand_index_outer_joint_effort_controller hand_middle_abd_joint_effort_controller hand_middle_inner_joint_effort_controller hand_middle_middle_joint_effort_controller hand_middle_outer_joint_effort_controller hand_ring_abd_joint_effort_controller hand_ring_inner_joint_effort_controller  hand_ring_middle_joint_effort_controller hand_ring_outer_joint_effort_controller hand_little_abd_joint_effort_controller hand_little_inner_joint_effort_controller hand_little_middle_joint_effort_controller hand_little_outer_joint_effort_controller"/>
+        <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/soft_hand" args="joint_state_controller hand_thumb_abd_joint_effort_controller hand_thumb_inner_joint_effort_controller hand_thumb_outer_joint_effort_controller hand_index_abd_joint_position_controller hand_index_inner_joint_effort_controller hand_index_middle_joint_effort_controller hand_index_outer_joint_effort_controller hand_middle_abd_joint_position_controller hand_middle_inner_joint_effort_controller hand_middle_middle_joint_effort_controller hand_middle_outer_joint_effort_controller hand_ring_abd_joint_position_controller hand_ring_inner_joint_effort_controller  hand_ring_middle_joint_effort_controller hand_ring_outer_joint_effort_controller hand_little_abd_joint_position_controller hand_little_inner_joint_effort_controller hand_little_middle_joint_effort_controller hand_little_outer_joint_effort_controller"/>
+
+        <!-- Node to control the hand -->
+        <node name="move_hand" pkg="hand_full_control" type="move_hand_effort_control.py" output="screen" /> 
     </group>
     <group unless="$(arg use_effort_control)">
         <!-- load controller configurations -->
         <rosparam file="$(find hand_full_control)/config/soft_hand_full_position_control.yaml" command="load"/>
 
         <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/soft_hand" args="joint_state_controller hand_thumb_abd_joint_position_controller hand_thumb_inner_joint_position_controller hand_thumb_outer_joint_position_controller hand_index_abd_joint_position_controller hand_index_inner_joint_position_controller hand_index_middle_joint_position_controller hand_index_outer_joint_position_controller hand_middle_abd_joint_position_controller hand_middle_inner_joint_position_controller hand_middle_middle_joint_position_controller hand_middle_outer_joint_position_controller hand_ring_abd_joint_position_controller hand_ring_inner_joint_position_controller  hand_ring_middle_joint_position_controller hand_ring_outer_joint_position_controller hand_little_abd_joint_position_controller hand_little_inner_joint_position_controller hand_little_middle_joint_position_controller hand_little_outer_joint_position_controller"/>
+
+        <!-- Node to control the hand -->
+        <node name="move_hand" pkg="hand_full_control" type="move_hand_position_control.py" output="screen" /> 
     </group>
 
     <group if="$(arg use_rviz)">
@@ -44,7 +52,6 @@
         <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
     </group>
 
-    <!-- Node to control the hand -->
-    <node name="move_hand" pkg="hand_full_control" type="move_hand.py" output="screen" /> 
+    
 
 </launch>

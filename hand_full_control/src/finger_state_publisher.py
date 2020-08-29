@@ -49,8 +49,11 @@ class finger_state_publisher():
         names = msg.name
 
         for i, tip in enumerate(self.tip_links):
-            j = names.index('soft_hand::' + tip)
-            self.fingers[i, :] = np.array([msg.pose[j].position.x, msg.pose[j].position.y, msg.pose[j].position.z]) - self.base
+            try:
+                j = names.index('soft_hand::' + tip)
+                self.fingers[i, :] = np.array([msg.pose[j].position.x, msg.pose[j].position.y, msg.pose[j].position.z]) - self.base
+            except:
+                continue
 
 
     def ClockCallback(self, msg):

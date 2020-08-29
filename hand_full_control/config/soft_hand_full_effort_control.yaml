@@ -20,8 +20,8 @@ soft_hand:
     joint: soft_hand_thumb_outer_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 
-  hand_index_abd_joint_effort_controller:
-    type: effort_controllers/JointEffortController
+  hand_index_abd_joint_position_controller:
+    type: position_controllers/JointPositionController
     joint: soft_hand_index_abd_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 
@@ -40,8 +40,8 @@ soft_hand:
     joint: soft_hand_index_outer_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 
-  hand_middle_abd_joint_effort_controller:
-    type: effort_controllers/JointEffortController
+  hand_middle_abd_joint_position_controller:
+    type: position_controllers/JointPositionController
     joint: soft_hand_middle_abd_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 
@@ -60,8 +60,8 @@ soft_hand:
     joint: soft_hand_middle_outer_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 
-  hand_ring_abd_joint_effort_controller:
-    type: effort_controllers/JointEffortController
+  hand_ring_abd_joint_position_controller:
+    type: position_controllers/JointPositionController
     joint: soft_hand_ring_abd_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 
@@ -80,8 +80,8 @@ soft_hand:
     joint: soft_hand_ring_outer_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 
-  hand_little_abd_joint_effort_controller:
-    type: effort_controllers/JointEffortController
+  hand_little_abd_joint_position_controller:
+    type: position_controllers/JointPositionController
     joint: soft_hand_little_abd_joint
     pid: {p: 1.0, i: 0.1, d: 0.5}
 

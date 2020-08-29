@@ -24,7 +24,7 @@
 	<xacro:property name="outer_lb" value="0" />
 	<xacro:property name="outer_ub" value="45" />
 	<xacro:property name="velocity" value="100" />
-	<xacro:property name="effort" value="100" />
+	<xacro:property name="effort" value="10" />
 	<xacro:property name="damping" value="0.0" />
 	<xacro:property name="friction" value="0.0" />
 	
@@ -35,6 +35,10 @@
 	<xacro:property name="max_synergy_effort" value="100" />
 	<xacro:property name="synergy_damping" value="0.0" />
 	<xacro:property name="synergy_friction" value="0.0" />
+
+	<xacro:property name="rubber_friction_coefficient" value="1.16" />  <!-- True: 1.16 -->
+	<xacro:property name="rubber_contact_stiffness_coefficient" value="1000000.0" />
+	<xacro:property name="rubber_contact_damping_coefficient" value="1.0" />
 
 	<!-- SOFT FINGER model -->
 	<!-- 4 fingers are equal (index, middle, ring, little) -->
@@ -162,6 +166,11 @@
 			</collision>
 		</link>
 		<gazebo reference="${name}_distal_link">
+			<selfCollide>false</selfCollide>
+			<mu1>${rubber_friction_coefficient}</mu1>
+			<mu2>${rubber_friction_coefficient}</mu2>
+			<kp>${rubber_contact_stiffness_coefficient}</kp>
+			<kd>${rubber_contact_damping_coefficient}</kd>
 			<material>Gazebo/Blue</material>
 		</gazebo>
 
@@ -302,6 +311,11 @@
 			</collision>
 		</link>
 		<gazebo reference="${name}_distal_link">
+			<selfCollide>false</selfCollide>
+			<mu1>${rubber_friction_coefficient}</mu1>
+			<mu2>${rubber_friction_coefficient}</mu2>
+			<kp>${rubber_contact_stiffness_coefficient}</kp>
+			<kd>${rubber_contact_damping_coefficient}</kd>
 			<material>Gazebo/Blue</material>
 		</gazebo>
 	</xacro:macro>
