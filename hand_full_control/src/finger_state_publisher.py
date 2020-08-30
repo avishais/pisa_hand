@@ -32,8 +32,6 @@ class finger_state_publisher():
         rospy.Subscriber('/clock', Clock, self.ClockCallback)
         state_pub = rospy.Publisher('/finger_state', Float32MultiArray, queue_size=10)
         
-        
-
         msg = Float32MultiArray()
 
         rate = rospy.Rate(100)

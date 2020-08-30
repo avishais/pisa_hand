@@ -24,7 +24,7 @@ class RodNode():
     names = None
     publishers = dict()
     fingers = np.zeros((5,3))
-    joint_max_bound = np.deg2rad([30., 60., 60., 45.])
+    joint_max_bound = np.deg2rad([30., 60., 60., 60.])
     tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_distal_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
     
     def __init__(self):

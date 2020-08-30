@@ -13,14 +13,14 @@
         </inertial> 
         <visual>
             <geometry>
-                <mesh filename="package://object_spawn/meshes/13_apple.stl" scale="1 1 1" />
+                <mesh filename="package://object_spawn/meshes/13_apple_t.stl" scale="1 1 1" />
             </geometry>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <material name="Green" />
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://object_spawn/meshes/13_apple.stl" scale="1 1 1" />
+                <mesh filename="package://object_spawn/meshes/13_apple_t.stl" scale="1 1 1" />
             </geometry>
             <origin rpy="0 0 0" xyz="0 0 0"/>
         </collision>
@@ -35,6 +35,7 @@
       <material>Gazebo/Green </material>
     </gazebo>
 
-    <joint name="world_to_object" type="fixed"> <parent link="world"/> <child link="object"/> <origin xyz="0.05 0 1.17" rpy="0 0 0" /> </joint>
+    <joint name="world_to_object" type="fixed"> <parent link="world"/> <child link="object"/> <origin xyz="0 0 0" rpy="0 0 0" /> </joint>
+    <!-- 0.05 0 1.17 -->
 
 </robot>

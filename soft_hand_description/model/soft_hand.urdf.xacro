@@ -20,9 +20,9 @@
 	<xacro:property name="inner_lb" value="0" />
 	<xacro:property name="inner_ub" value="60" />
 	<xacro:property name="middle_lb" value="0" />
-	<xacro:property name="middle_ub" value="60" />
+	<xacro:property name="middle_ub" value="75" />
 	<xacro:property name="outer_lb" value="0" />
-	<xacro:property name="outer_ub" value="45" />
+	<xacro:property name="outer_ub" value="60" />
 	<xacro:property name="velocity" value="100" />
 	<xacro:property name="effort" value="10" />
 	<xacro:property name="damping" value="0.0" />

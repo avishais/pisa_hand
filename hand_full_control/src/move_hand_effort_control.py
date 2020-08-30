@@ -24,9 +24,9 @@ class RodNode():
     names = None
     publishers = dict()
     fingers = np.zeros((5,3))
-    joint_max_bound = np.deg2rad([30., 60., 60., 45.])
     tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_distal_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
-    
+    fingers = np.zeros((5,3))
+
     def __init__(self):
         rospy.init_node('HandNode', anonymous=True)
 
@@ -100,12 +100,12 @@ class RodNode():
         
         self.desired_efforts = np.zeros((self.num_joints,)).reshape(-1,4) - 10
         self.desired_efforts[1:,0] = 0.0
-        for _ in range(100):
-            for finger in range(self.num_fingers):
-                for i, name in enumerate(self.Names[finger]):
-                    self.publishers[name].publish(self.desired_efforts[finger, i])
+        # for _ in range(100):
+        #     for finger in range(self.num_fingers):
+        #         for i, name in enumerate(self.Names[finger]):
+        #             self.publishers[name].publish(self.desired_efforts[finger, i])
 
-        self.desired_efforts = np.zeros((self.num_joints,)).reshape(-1,4)            
+        # self.desired_efforts = np.zeros((self.num_joints,)).reshape(-1,4)            
 
         return EmptyResponse()
 
