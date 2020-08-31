@@ -26,6 +26,7 @@ class RodNode():
     fingers = np.zeros((5,3))
     tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_distal_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
     fingers = np.zeros((5,3))
+    random_abd = False
 
     def __init__(self):
         rospy.init_node('HandNode', anonymous=True)
@@ -112,7 +113,11 @@ class RodNode():
     def CloseGripper(self, msg):
         
         self.desired_efforts = np.zeros((self.num_joints,)).reshape(-1,4) + 1
-        self.desired_efforts[1:,0] = 0.0
+
+        if self.random_abd:
+            self.desired_efforts[1:,0] = np.random.random((4,)) * 20. - 10.
+        else:
+            self.desired_efforts[1:,0] = 0.0
 
         return EmptyResponse()
         

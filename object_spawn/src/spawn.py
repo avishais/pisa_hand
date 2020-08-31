@@ -180,8 +180,8 @@ class SpawnNode():
             self.random_spawn(msg)
             return 2
 
-        if ch == 'l': # Log coordinates
-            f = open(r'../data/finger_logs' + str(self.obj_num) + '_' + str(self.fingers.shape[0]) + '.txt',"a")
+        if ch == 't': # Log coordinates
+            f = open(r'/home/avishai/catkin_ws/src/pisa_hand/object_spawn/data/finger_logs' + str(self.obj_num) + '_' + str(self.fingers.shape[0]) + '.txt',"a")
             for s in self.fingers.flatten():
                 f.write(' ' + str(s))
             f.write('\n')

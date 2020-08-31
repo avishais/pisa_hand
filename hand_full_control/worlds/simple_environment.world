@@ -17,5 +17,11 @@
       <gravity>0.000000 0.000000 0.000000</gravity>
     </physics>
 
+    <gui>
+      <camera name="user_camera">
+        <pose>0.50 -0.31 1.31 0 0.3 2.5</pose>
+      </camera>
+    </gui>  
+
   </world>
 </sdf>
