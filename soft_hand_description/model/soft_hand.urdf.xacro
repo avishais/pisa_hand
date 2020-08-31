@@ -76,7 +76,7 @@
 			</collision>
 		</link>
 		<gazebo reference="${name}_knuckle_link">
-			<material>Gazebo/Blue</material>
+			<material>Gazebo/Gold</material>
 		</gazebo>
 
 		<!-- PROXIMAL PHALANGE -->
@@ -106,7 +106,7 @@
 			</collision>
 		</link>
 		<gazebo reference="${name}_proximal_link">
-			<material>Gazebo/Blue</material>
+			<material>Gazebo/Gold</material>
 		</gazebo>
 
 		<!-- MIDDLE PHALANGE -->
@@ -136,7 +136,7 @@
 			</collision>
 		</link>
 		<gazebo reference="${name}_middle_link">
-			<material>Gazebo/Blue</material>
+			<material>Gazebo/Gold</material>
 		</gazebo>
 
 		<!-- DISTAL PHALANGE -->
@@ -171,7 +171,7 @@
 			<mu2>${rubber_friction_coefficient}</mu2>
 			<kp>${rubber_contact_stiffness_coefficient}</kp>
 			<kd>${rubber_contact_damping_coefficient}</kd>
-			<material>Gazebo/Blue</material>
+			<material>Gazebo/Gold</material>
 		</gazebo>
 
 	</xacro:macro>
@@ -208,7 +208,7 @@
 				</collision>
 			</link>
 			<gazebo reference="${name}_knuckle_link">
-				<material>Gazebo/Blue</material>
+				<material>Gazebo/Gold</material>
 			</gazebo>
 
 			<!-- PROXIMAL PHALANGE -->
@@ -249,7 +249,7 @@
 				</collision>
 			</link>
 			<gazebo reference="${name}_knuckle_link">
-				<material>Gazebo/Blue</material>
+				<material>Gazebo/Gold</material>
 			</gazebo>
 
 			<!-- PROXIMAL PHALANGE -->
@@ -281,7 +281,7 @@
 			</collision>
 		</link>
 		<gazebo reference="${name}_proximal_link">
-			<material>Gazebo/Blue</material>
+			<material>Gazebo/Gold</material>
 		</gazebo>
 
 		<!-- DISTAL PHALANGE -->
@@ -316,7 +316,7 @@
 			<mu2>${rubber_friction_coefficient}</mu2>
 			<kp>${rubber_contact_stiffness_coefficient}</kp>
 			<kd>${rubber_contact_damping_coefficient}</kd>
-			<material>Gazebo/Blue</material>
+			<material>Gazebo/Gold</material>
 		</gazebo>
 	</xacro:macro>
 
@@ -390,7 +390,7 @@
 			</xacro:unless>
 		</link>
 		<gazebo reference="${name}_palm_link">
-			<material>Gazebo/White</material>
+			<material>Gazebo/Gold</material>
 		</gazebo>
 		
 
