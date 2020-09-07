@@ -14,13 +14,14 @@ import numpy as np
 from std_msgs.msg import Float64, Float32MultiArray
 from gazebo_msgs.msg import LinkStates
 from rosgraph_msgs.msg import Clock
+from scipy.spatial.transform import Rotation as R
 
 class finger_state_publisher():
 
     fingers = np.zeros((5,3))
     current_time = 0.0
     prev_time = 0.0
-    tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_middle_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
+    tip_links = ['soft_hand_thumb_distal_link','soft_hand_index_distal_link','soft_hand_middle_distal_link','soft_hand_ring_distal_link','soft_hand_little_distal_link']
     base_label = 'box'
     base = np.array([0,0,1.0])
 
@@ -49,7 +50,14 @@ class finger_state_publisher():
         for i, tip in enumerate(self.tip_links):
             try:
                 j = names.index('soft_hand::' + tip)
-                self.fingers[i, :] = np.array([msg.pose[j].position.x, msg.pose[j].position.y, msg.pose[j].position.z]) - self.base
+
+                q = [msg.pose[j].orientation.x, msg.pose[j].orientation.y, msg.pose[j].orientation.z, msg.pose[j].orientation.w]
+                r = R.from_quat(q)
+                Rot = np.array(r.as_dcm())  # similar to as_matrix() but in a previous scipy version
+                x = np.array([msg.pose[j].position.x, msg.pose[j].position.y, msg.pose[j].position.z])
+                x = Rot.dot( Rot.T.dot(x) + np.array([0.0162,0,0.002]) ) # Move poisiton to tip of finger
+
+                self.fingers[i, :] = x - self.base
             except:
                 continue
 

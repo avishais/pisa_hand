@@ -27,6 +27,8 @@ class SpawnNode():
 
         f = open('/home/avishai/catkin_ws/src/pisa_hand/object_spawn/urdf/object.urdf','r')
         self.urdf_file = f.read()
+        f = open('/home/avishai/catkin_ws/src/pisa_hand/object_spawn/urdf/sphere.urdf','r')
+        self.sphere_file = f.read()
 
         # Find object number
         f_copy = open('/home/avishai/catkin_ws/src/pisa_hand/object_spawn/urdf/object.urdf','r')
@@ -39,6 +41,7 @@ class SpawnNode():
         f_copy.close()
         rospy.loginfo('Spawning object number %s.'%self.obj_num)
 
+        self.log_count = 0
         rospy.wait_for_service('gazebo/spawn_urdf_model')
         self.spawn_model_proxy = rospy.ServiceProxy('gazebo/spawn_urdf_model', SpawnModel)
         self.delete_model_proxy = rospy.ServiceProxy('gazebo/delete_model', DeleteModel)
@@ -54,7 +57,7 @@ class SpawnNode():
         msg = Empty()
 
         rate = rospy.Rate(100)
-        rospy.loginfo('Reasy to spawn...')
+        rospy.loginfo('Ready to spawn...')
         while not rospy.is_shutdown():
 
             if self.use_keyboard:
@@ -144,7 +147,7 @@ class SpawnNode():
         if ch == 'q': # Backward
             self.initial_pose.position.x -= step     
             return 1
-        if ch == 'w': # Fardward
+        if ch == 'e': # Fardward
             self.initial_pose.position.x += step     
             return 1
 
@@ -180,12 +183,26 @@ class SpawnNode():
             self.random_spawn(msg)
             return 2
 
+        if ch >= '1' and ch <='5':
+            res = self.delete_model_proxy('sph')
+
+            initial_pose = Pose()
+            f = ['1','2','3','4','5'].index(ch)
+            print(self.fingers[f, :])
+            initial_pose.position.x = self.fingers[f, 0]
+            initial_pose.position.y = self.fingers[f, 1]
+            initial_pose.position.z = self.fingers[f, 2] + 1.0
+            self.spawn_model_proxy('sph', self.sphere_file, "", initial_pose, 'world')
+            return 2
+
         if ch == 't': # Log coordinates
-            f = open(r'/home/avishai/catkin_ws/src/pisa_hand/object_spawn/data/finger_logs' + str(self.obj_num) + '_' + str(self.fingers.shape[0]) + '.txt',"a")
+            f = open(r'/home/avishai/catkin_ws/src/pisa_hand/object_spawn/data/finger_logs_o' + str(self.obj_num) + '_f' + str(self.fingers.shape[0]) + '.txt',"a")
             for s in self.fingers.flatten():
                 f.write(' ' + str(s))
             f.write('\n')
             f.close()
+            self.log_count += 1
+            rospy.loginfo('Point logged, total %d.'%self.log_count)
             return 2
         
 

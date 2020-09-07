@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot name="sph">
+
+  <link name="world"/>
+
+  <link name="sphe">
+    <inertial>
+        <mass value="1.0"/>
+        <inertia  ixx="1" ixy="0.00"  ixz="0.00" iyy="1" iyz="0.00" izz="1" />
+    </inertial>
+    <visual>
+      <geometry>
+        <sphere radius="0.01"/>
+      </geometry>
+      <material name="green">
+            <color rgba="0 1 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="world_to_sphe" type="fixed"> <parent link="world"/> <child link="sphe"/> <origin xyz="0 0 0" rpy="0 0 0" /> </joint>
+</robot>

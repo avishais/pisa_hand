@@ -13,14 +13,14 @@
         </inertial> 
         <visual>
             <geometry>
-                <mesh filename="package://object_spawn/meshes/13_apple_t.stl" scale="1 1 1" />
+                <mesh filename="package://object_spawn/meshes/25_mug_t.stl" scale="1 1 1" />
             </geometry>
             <origin rpy="0 0 0" xyz="0 0 0"/>
-            <material name="Green" />
+            <material name="Green"/>
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://object_spawn/meshes/13_apple_t.stl" scale="1 1 1" />
+                <mesh filename="package://object_spawn/meshes/25_mug_t.stl" scale="1 1 1" />
             </geometry>
             <origin rpy="0 0 0" xyz="0 0 0"/>
         </collision>

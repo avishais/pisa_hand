@@ -1,0 +1,6 @@
+
+<launch>
+
+<node name="object_spawn" pkg="object_spawn" type="spawn.py" output="screen" /> 
+
+</launch>
